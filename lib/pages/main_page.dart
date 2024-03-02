@@ -1,6 +1,8 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rlhf_money/services/auth/auth_service.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -10,6 +12,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  void signOut() {
+    // firebase auth instance
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    authService.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +29,7 @@ class _MainPageState extends State<MainPage> {
             //currentPageIndex = index;
           });
         },
-        indicatorColor: Color(0xdd415A77),
+        indicatorColor: const Color(0xdd415A77),
         //selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
@@ -43,11 +52,13 @@ class _MainPageState extends State<MainPage> {
       ),
       appBar: AppBar(
         backgroundColor: const Color(0xffE0E1DD),
-        title: const Center(
-            child: Text(
+        title: const Text(
           'Your models',
           style: TextStyle(fontSize: 28),
-        )),
+        ),
+        actions: [
+          IconButton(onPressed: signOut, icon: const Icon(Icons.logout))
+        ],
       ),
       body: SafeArea(
         child: Center(
@@ -96,6 +107,5 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
-    
   }
 }

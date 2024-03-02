@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:rlhf_money/components/my_button.dart';
 import 'package:rlhf_money/components/my_textfield.dart';
+import 'package:rlhf_money/services/auth/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   final void Function() onPressed;
@@ -17,6 +19,27 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+
+  void signUp(bool dev) {
+    // firebase auth instance
+    final _auth = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      _auth.registerWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+          _firstNameController.text,
+          _lastNameController.text,
+          dev);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -216,14 +239,15 @@ class _SignUpPageState extends State<SignUpPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            MyButton(text: 'Yes', icon: Icons.check, onPressed: () {}),
+            MyButton(
+                text: 'Yes', icon: Icons.check, onPressed: () => signUp(true)),
             const SizedBox(
               width: 40,
             ),
             MyButton(
               text: 'No',
               icon: Icons.close,
-              onPressed: () {},
+              onPressed: () => signUp(false),
             ),
           ],
         ),
