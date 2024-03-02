@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rlhf_money/components/my_button.dart';
 import 'package:rlhf_money/components/my_textfield.dart';
+import 'package:provider/provider.dart';
+import 'package:rlhf_money/services/auth/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function() onPressed;
@@ -13,6 +16,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  void login() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      await authService.signInWithEmailAndPassword(
+          emailController.text, passwordController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +68,10 @@ class _LoginPageState extends State<LoginPage> {
                 height: 40,
               ),
               MyButton(
-                  text: 'Login', icon: Icons.login_outlined, onPressed: () {}),
+                text: 'Login',
+                icon: Icons.login_outlined,
+                onPressed: login,
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
