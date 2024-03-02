@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "138858862807",
+    "project_id": "rlhf-money-69636",
+    "storage_bucket": "rlhf-money-69636.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138858862807:android:2a90c88140707230b43892",
+        "android_client_info": {
+          "package_name": "com.example.rlhf_money"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbFh4o_Mjz2438FHf-nvcCcWiEbZHipc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
