@@ -17,6 +17,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  int currentPageIndex = 0;
   void signOut() {
     // firebase auth instance
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -31,11 +32,11 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
-            //currentPageIndex = index;
+            currentPageIndex = index;
           });
         },
         indicatorColor: const Color(0xdd415A77),
-        //selectedIndex: currentPageIndex,
+        selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
             selectedIcon: Icon(Icons.home),
@@ -43,14 +44,13 @@ class _MainPageState extends State<MainPage> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Badge(child: Icon(Icons.account_balance_wallet_rounded)),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            icon: Icon(Icons.account_balance_wallet_outlined),
             label: 'Wallet',
           ),
           NavigationDestination(
-            icon: Badge(
-              label: Text('2'),
-              child: Icon(Icons.account_circle_rounded),
-            ),
+            selectedIcon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle_outlined),
             label: 'Profile',
           ),
         ],
