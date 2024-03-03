@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,30 @@ class WalletPage extends StatefulWidget {
 class _WalletPageState extends State<WalletPage> {
   final _cashTextController = TextEditingController();
 
-  void cashOut() async {}
+  void cashOut() async {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text('Sorry!!!!!'),
+          content: const Text(
+            'We\'re currently too poor to pay you. Come back when we\'re rich and famous!',
+          ),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: const Text(
+                'Close',
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +85,11 @@ class _WalletPageState extends State<WalletPage> {
                   icon: Icon(Icons.account_circle_outlined),
                   label: 'Profile',
                 ),
+                NavigationDestination(
+                  selectedIcon: Icon(Icons.settings),
+                  icon: Icon(Icons.settings_outlined),
+                  label: 'Developers',
+                ),
               ],
             ),
             backgroundColor: const Color(0xffE0E1DD),
@@ -93,14 +122,20 @@ class _WalletPageState extends State<WalletPage> {
                                 color: Colors.white,
                                 size: 24,
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
                               Text(
-                                '£${snapshot.data! * 0.01}',
+                                '£${(snapshot.data! * 0.01).toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
                                 ),
                               ),
+                              const SizedBox(
+                                width: 5,
+                              )
                             ],
                           ))
                     ],
@@ -114,7 +149,8 @@ class _WalletPageState extends State<WalletPage> {
                         borderRadius: BorderRadius.circular(20)),
                     child: Column(
                       children: [
-                        Text('Balance: £${snapshot.data! * 0.01}',
+                        Text(
+                            'Balance: £${(snapshot.data! * 0.01).toStringAsFixed(2)}',
                             style: const TextStyle(fontSize: 36)),
                         const Text('Minimum cash out: £5',
                             style: TextStyle(fontSize: 18, color: Colors.grey)),

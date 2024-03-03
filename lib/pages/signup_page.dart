@@ -5,7 +5,6 @@ import 'package:rlhf_money/components/my_button.dart';
 import 'package:rlhf_money/components/my_textfield.dart';
 import 'package:rlhf_money/services/auth/auth_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
   final void Function() onPressed;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rlhf_money/pages/dev_page.dart';
 import 'package:rlhf_money/pages/main_page.dart';
 import 'package:rlhf_money/pages/profile_page.dart';
 import 'package:rlhf_money/pages/wallet_page.dart';
@@ -28,6 +29,8 @@ class _HomeGateState extends State<HomeGate> {
         return WalletPage(setPageIndex: setPageIndex);
       case 2:
         return ProfilePage(setPageIndex: setPageIndex);
+      case 3:
+        return DevPage(setPageIndex: setPageIndex);
       default:
         return MainPage(setPageIndex: setPageIndex);
     }

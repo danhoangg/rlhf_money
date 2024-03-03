@@ -1,4 +1,11 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rlhf_money/components/my_button.dart';
+import 'package:rlhf_money/components/my_textfield.dart';
+import 'package:rlhf_money/services/auth/user_info_service.dart';
 
 class ProfilePage extends StatefulWidget {
   final Function(int) setPageIndex;
@@ -13,9 +20,91 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  final _pageController = PageController();
+
+  void _nextPage() {
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _previousPage() {
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void changeName() {
+    final userInfoService =
+        Provider.of<UserInfoService>(context, listen: false);
+
+    try {
+      userInfoService.changeName(
+          _firstNameController.text, _lastNameController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void changeEmail() {
+    final userInfoService =
+        Provider.of<UserInfoService>(context, listen: false);
+
+    try {
+      userInfoService.changeEmail(_emailController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void changePassword() {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final userInfoService =
+        Provider.of<UserInfoService>(context, listen: false);
+
+    try {
+      userInfoService.changePassword(_passwordController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffE0E1DD),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           widget.setPageIndex(index);
@@ -38,42 +127,223 @@ class _ProfilePageState extends State<ProfilePage> {
             icon: Icon(Icons.account_circle_outlined),
             label: 'Profile',
           ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            label: 'Developers',
+          ),
         ],
       ),
       appBar: AppBar(
         title: const Text('Profile'),
+        backgroundColor: const Color(0xffE0E1DD),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: _buildProfile(),
+    );
+  }
+
+  Widget _buildProfile() {
+    // userinfo service
+    final userInfoService =
+        Provider.of<UserInfoService>(context, listen: false);
+
+    return StreamBuilder(
+      stream: userInfoService.getUserInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            color: const Color(0xffE0E1DD),
+            child: const CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Text('Something went wrong');
+        }
+
+        final model = snapshot.data!;
+
+        return SafeArea(
+            child: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(
-                  'assets/profile_picture.jpg'), // Replace with your profile picture
+            _buildName(model, _previousPage, _nextPage),
+            _buildEmail(model, _previousPage, _nextPage),
+            _buildPassword(model, _previousPage, _nextPage),
+          ],
+        ));
+      },
+    );
+  }
+
+  Widget _buildName(model, prevPage, nextPage) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 10),
+      child: Center(
+        child: Column(
+          children: [
+            Text(
+              'Hi ${model['firstName']}, how are you doing?',
+              style: const TextStyle(fontSize: 20),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'user@example.com', // Replace with the user's email address
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            const SizedBox(height: 30),
+            MyTextField(
+              controller: _firstNameController,
+              labelText: model['firstName'],
+              hintText: 'Change your first name',
+              obscureText: false,
             ),
-            const SizedBox(height: 10),
-            InkWell(
-              onTap: () {
-                // Handle password change here
-                // For example, you can navigate to a password change screen
-              },
-              child: const Text(
-                'Change Password',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
+            const SizedBox(
+              height: 20,
+            ),
+            MyTextField(
+              controller: _lastNameController,
+              labelText: model['lastName'],
+              hintText: 'Change your last name',
+              obscureText: false,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: prevPage,
                 ),
-              ),
+                const SizedBox(
+                  width: 20,
+                ),
+                MyButton(
+                    text: 'Change name?',
+                    icon: Icons.edit,
+                    onPressed: changeName),
+                const SizedBox(
+                  width: 20,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: nextPage,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 40,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmail(model, prevPage, nextPage) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 10),
+      child: Center(
+        child: Column(
+          children: [
+            Text(
+              'Hi ${model['firstName']}, how are you doing?',
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 30),
+            MyTextField(
+              controller: _emailController,
+              labelText: model['email'],
+              hintText: 'Change your email',
+              obscureText: false,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: prevPage,
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                MyButton(
+                    text: 'Change email?',
+                    icon: Icons.edit,
+                    onPressed: changeEmail),
+                const SizedBox(
+                  width: 20,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: nextPage,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 40,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPassword(model, prevPage, nextPage) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 10),
+      child: Center(
+        child: Column(
+          children: [
+            Text(
+              'Hi ${model['firstName']}, how are you doing?',
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 30),
+            MyTextField(
+              controller: _passwordController,
+              labelText: 'Password',
+              hintText: 'Change your password',
+              obscureText: true,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            MyTextField(
+              controller: _confirmPasswordController,
+              labelText: 'Confirm Password',
+              hintText: 'Re enter your password',
+              obscureText: true,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: prevPage,
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                MyButton(
+                    text: 'Change password?',
+                    icon: Icons.edit,
+                    onPressed: changePassword),
+                const SizedBox(
+                  width: 20,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: nextPage,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 40,
             ),
           ],
         ),
