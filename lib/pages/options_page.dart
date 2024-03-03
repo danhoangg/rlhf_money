@@ -22,7 +22,7 @@ class _OptionsPageState extends State<OptionsPage> {
   // update user balance
   void finishSurvey() {
     final modelService = Provider.of<RewardsService>(context, listen: false);
-    modelService.finishSurvey(widget.id);
+    modelService.finishSurvey(widget.id, _selectedResponses);
 
     Navigator.pop(context);
   }
