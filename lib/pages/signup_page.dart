@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:rlhf_money/components/my_button.dart';
 import 'package:rlhf_money/components/my_textfield.dart';
 import 'package:rlhf_money/services/auth/auth_service.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
   final void Function() onPressed;
@@ -17,10 +19,22 @@ class _SignUpPageState extends State<SignUpPage> {
   final PageController _pageController = PageController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
 
   void signUp(bool dev) {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // firebase auth instance
     final _auth = Provider.of<AuthService>(context, listen: false);
 
@@ -66,21 +80,16 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _showMoreInfoDialog(BuildContext context) {
-    showDialog(
+    showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return CupertinoAlertDialog(
           title: const Text('Developer?'),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                    'As a developer you are able to pay to use our services to train and perfect your generative ai models.'),
-              ],
-            ),
+          content: const Text(
+            'As a developer you are able to pay to use our services to train and perfect your generative AI models.',
           ),
           actions: <Widget>[
-            TextButton(
+            CupertinoDialogAction(
               child: const Text(
                 'Close',
                 style: TextStyle(color: Colors.black),
@@ -140,6 +149,14 @@ class _SignUpPageState extends State<SignUpPage> {
         MyTextField(
             controller: _passwordController,
             labelText: 'Enter your password',
+            hintText: 'Password',
+            obscureText: true),
+        const SizedBox(
+          height: 30,
+        ),
+        MyTextField(
+            controller: _confirmPasswordController,
+            labelText: 'Re enter password',
             hintText: 'Password',
             obscureText: true),
         const SizedBox(

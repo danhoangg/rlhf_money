@@ -41,6 +41,7 @@ class AuthService extends ChangeNotifier {
         'lastName': lastName,
         'email': email,
         'dev': dev,
+        'balance': 0,
       });
 
       return userCredential;
