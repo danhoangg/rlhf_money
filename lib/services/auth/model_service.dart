@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 class ModelService extends ChangeNotifier {
   // fetch all models
   Stream<QuerySnapshot> fetchModels() {
-    return FirebaseFirestore.instance.collection('models').snapshots();
+    return FirebaseFirestore.instance
+        .collection('models')
+        .limit(10)
+        .snapshots();
   }
 
   // fetch all questions from model

@@ -10,14 +10,15 @@ import 'package:rlhf_money/services/auth/auth_service.dart';
 import 'package:rlhf_money/services/auth/model_service.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final Function(int) setPageIndex;
+  final int currentPageIndex = 0;
+  const MainPage({super.key, required this.setPageIndex});
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int currentPageIndex = 0;
   void signOut() {
     // firebase auth instance
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -31,12 +32,10 @@ class _MainPageState extends State<MainPage> {
       backgroundColor: const Color(0xffE0E1DD),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
+          widget.setPageIndex(index);
         },
         indicatorColor: const Color(0xdd415A77),
-        selectedIndex: currentPageIndex,
+        selectedIndex: widget.currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
             selectedIcon: Icon(Icons.home),

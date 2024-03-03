@@ -7,6 +7,7 @@ import 'package:rlhf_money/pages/profile_page.dart';
 import 'package:rlhf_money/pages/wallet_page.dart';
 import 'package:rlhf_money/services/auth/auth_gate.dart';
 import 'package:rlhf_money/services/auth/auth_service.dart';
+import 'package:rlhf_money/services/auth/home_gate.dart';
 import 'package:rlhf_money/services/auth/model_service.dart';
 import 'package:rlhf_money/services/auth/rewards_service.dart';
 
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'rlhf',
-      home: MainPage(),
+      home: HomeGate(),
     );
   }
 }

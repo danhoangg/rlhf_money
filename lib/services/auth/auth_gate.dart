@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rlhf_money/pages/main_page.dart';
+import 'package:rlhf_money/services/auth/home_gate.dart';
 import 'package:rlhf_money/services/auth/login_or_register.dart';
 
 class AuthGate extends StatelessWidget {
@@ -17,7 +18,7 @@ class AuthGate extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            return const MainPage();
+            return const HomeGate();
           } else {
             return const LoginOrRegister();
           }

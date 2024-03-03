@@ -55,4 +55,26 @@ class RewardsService extends ChangeNotifier {
       print("Error updating results: $error");
     });
   }
+
+  // get user balance
+  Stream<int> getBalance() {
+    var currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) {
+      return Stream.value(0);
+    } else {
+      return _firestore
+          .collection('users')
+          .doc(currentUserId)
+          .snapshots()
+          .map((doc) {
+        if (doc.exists && doc.data()!.containsKey('balance')) {
+          return doc.data()!['balance'] is int
+              ? doc.data()!['balance'] as int
+              : 0;
+        } else {
+          return 0;
+        }
+      });
+    }
+  }
 }
